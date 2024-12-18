@@ -1,8 +1,8 @@
 % MATLAB script for Von Karman nose cone profile with plotting
 
 % Parameters
-R = 1.5; % Base radius in cm
-L = 6.7; % Cone length in cm
+R = 8 / 2; % Base radius in cm
+L = 31.1743; % Cone length in cm
 
 % Number of intervals
 n_points = 50;
@@ -22,19 +22,28 @@ for i = 1:length(x_values)
     y_values(i) = y(t);
 end
 
-% Save to Excel
-file_path = 'Von_Karman_Profile.xlsx';
-table_data = table(x_values', y_values', 'VariableNames', {'x_cm', 'y_cm'});
-writetable(table_data, file_path);
+% Save to .txt file
+file_path = 'Von_Karman_Profile.txt';
+file_id = fopen(file_path, 'w');
+
+% Write fixed header lines
+fprintf(file_id, '3d = True\n');
+fprintf(file_id, 'Fit = True\n');
+
+% Write data in the format: z x y
+for i = 1:length(x_values)
+    fprintf(file_id, '0\t%.6f\t%.6f\n', x_values(i), y_values(i));
+end
+
+fclose(file_id);
 
 % Plot the profile
 figure;
 plot(x_values, y_values, 'b-', 'LineWidth', 1.5);
-hold on;
-plot(x_values, -y_values, 'b-', 'LineWidth', 1.5); % Symmetric bottom half
 xlabel('x (cm)');
 ylabel('y (cm)');
 title('Von Karman Nose Cone Profile');
 grid on;
 axis equal;
+
 disp(['Profile data saved to ', file_path]);
